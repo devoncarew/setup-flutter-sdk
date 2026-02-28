@@ -43,7 +43,7 @@
 - Export the pub cache bin's directory to the system path
 - For now, do not use caching (`@actions/cache`) for the pub cache
 
-## Milestone 7 — macOS & Windows
+## Milestone 7 — macOS & Windows ✓
 
 - Add platform detection; use `.zip` on Windows, `.tar.xz` on Linux/macOS
 - Update the releases manifest URL per OS (`releases_macos.json`,

@@ -69,15 +69,22 @@ Use outputs with `id`:
 
 ## How it works
 
-1. Fetches the Flutter releases manifest from Google Storage.
-2. Resolves the requested channel or version to a specific release.
-3. Restores the SDK from the GitHub Actions cache if available.
-4. On a cache miss, downloads and extracts the SDK, then saves it to cache.
-5. Adds `flutter` and `dart` to `PATH` via the SDK's `bin/` directory.
-6. Sets `PUB_CACHE` to `~/.pub-cache` and adds `~/.pub-cache/bin` to `PATH`.
+1. Detects the current OS and CPU architecture.
+2. Fetches the Flutter releases manifest for the current OS from Google Storage.
+3. Resolves the requested channel or version to a specific release (on macOS, selects the correct archive for Apple Silicon or Intel).
+4. Restores the SDK from the GitHub Actions cache if available.
+5. On a cache miss, downloads and extracts the SDK (`.tar.xz` on Linux, `.zip` on macOS/Windows), then saves it to cache.
+6. Adds `flutter` and `dart` to `PATH` via the SDK's `bin/` directory.
+7. Sets `PUB_CACHE` to `~/.pub-cache` and adds `~/.pub-cache/bin` to `PATH`.
 
-The cache key is `setup-flutter-sdk-linux-<version>`, so cache hits are stable
-and deterministic across workflow runs.
+Cache keys are stable and deterministic across workflow runs:
+
+| Platform | Cache key |
+|----------|-----------|
+| Linux | `setup-flutter-sdk-linux-<version>` |
+| macOS (Apple Silicon) | `setup-flutter-sdk-macos-arm64-<version>` |
+| macOS (Intel) | `setup-flutter-sdk-macos-x64-<version>` |
+| Windows | `setup-flutter-sdk-windows-<version>` |
 
 Setting `PUB_CACHE` explicitly ensures a consistent pub cache location across
 all steps. Adding `~/.pub-cache/bin` to `PATH` makes globally-activated Dart

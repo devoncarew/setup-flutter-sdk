@@ -1,4 +1,10 @@
-import { resolveRelease, FlutterManifest, ARCHIVE_BASE_URL } from './index';
+import {
+  resolveRelease,
+  getManifestUrl,
+  getArchFilter,
+  FlutterManifest,
+  ARCHIVE_BASE_URL,
+} from './index';
 
 const mockManifest: FlutterManifest = {
   current_release: {
@@ -24,6 +30,25 @@ const mockManifest: FlutterManifest = {
       channel: 'beta',
       version: '3.20.0-7.1.pre',
       archive: 'beta/linux/flutter_linux_3.20.0-7.1.pre-beta.tar.xz',
+    },
+  ],
+};
+
+// macOS manifest: two entries per version (x64 and arm64), each with its own hash.
+const mockMacManifest: FlutterManifest = {
+  current_release: { stable: 'mac-x64-abc', beta: 'mac-x64-def' },
+  releases: [
+    {
+      hash: 'mac-x64-abc',
+      channel: 'stable',
+      version: '3.19.6',
+      archive: 'stable/macos/flutter_macos_3.19.6-stable.zip',
+    },
+    {
+      hash: 'mac-arm64-abc',
+      channel: 'stable',
+      version: '3.19.6',
+      archive: 'stable/macos/flutter_macos_arm64_3.19.6-stable.zip',
     },
   ],
 };
@@ -63,5 +88,62 @@ describe('resolveRelease', () => {
     expect(() => resolveRelease(mockManifest, 'nightly', '')).toThrow(
       "Unknown Flutter channel: 'nightly'.",
     );
+  });
+
+  it('resolves macOS stable channel to x64 release', () => {
+    const archFilter = getArchFilter('darwin', 'x64');
+    const result = resolveRelease(mockMacManifest, 'stable', '', archFilter);
+    expect(result.archiveUrl).toContain('flutter_macos_3.19.6-stable.zip');
+    expect(result.archiveUrl).not.toContain('arm64');
+  });
+
+  it('resolves macOS stable channel to arm64 release', () => {
+    const archFilter = getArchFilter('darwin', 'arm64');
+    const result = resolveRelease(mockMacManifest, 'stable', '', archFilter);
+    expect(result.archiveUrl).toContain('arm64');
+  });
+
+  it('resolves macOS exact version to arm64 release', () => {
+    const archFilter = getArchFilter('darwin', 'arm64');
+    const result = resolveRelease(mockMacManifest, 'stable', '3.19.6', archFilter);
+    expect(result.archiveUrl).toContain('arm64');
+  });
+});
+
+describe('getManifestUrl', () => {
+  it('returns the linux manifest URL for linux', () => {
+    expect(getManifestUrl('linux')).toContain('releases_linux.json');
+  });
+
+  it('returns the macos manifest URL for darwin', () => {
+    expect(getManifestUrl('darwin')).toContain('releases_macos.json');
+  });
+
+  it('returns the windows manifest URL for win32', () => {
+    expect(getManifestUrl('win32')).toContain('releases_windows.json');
+  });
+});
+
+describe('getArchFilter', () => {
+  it('returns undefined for linux', () => {
+    expect(getArchFilter('linux', 'x64')).toBeUndefined();
+  });
+
+  it('returns undefined for windows', () => {
+    expect(getArchFilter('win32', 'x64')).toBeUndefined();
+  });
+
+  it('returns a filter matching arm64 archives on macOS arm64', () => {
+    const filter = getArchFilter('darwin', 'arm64');
+    expect(filter).toBeDefined();
+    expect(filter!('stable/macos/flutter_macos_arm64_3.19.6-stable.zip')).toBe(true);
+    expect(filter!('stable/macos/flutter_macos_3.19.6-stable.zip')).toBe(false);
+  });
+
+  it('returns a filter excluding arm64 archives on macOS x64', () => {
+    const filter = getArchFilter('darwin', 'x64');
+    expect(filter).toBeDefined();
+    expect(filter!('stable/macos/flutter_macos_3.19.6-stable.zip')).toBe(true);
+    expect(filter!('stable/macos/flutter_macos_arm64_3.19.6-stable.zip')).toBe(false);
   });
 });

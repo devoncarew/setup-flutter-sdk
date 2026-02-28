@@ -5,8 +5,8 @@ import { HttpClient } from '@actions/http-client';
 import * as os from 'os';
 import * as path from 'path';
 
-const MANIFEST_URL =
-  'https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json';
+const MANIFEST_BASE_URL =
+  'https://storage.googleapis.com/flutter_infra_release/releases/releases_';
 export const ARCHIVE_BASE_URL =
   'https://storage.googleapis.com/flutter_infra_release/releases/';
 
@@ -27,11 +27,28 @@ export interface ResolvedRelease {
   archiveUrl: string;
 }
 
-export async function fetchManifest(): Promise<FlutterManifest> {
+export function getManifestUrl(platform: string): string {
+  if (platform === 'win32') return `${MANIFEST_BASE_URL}windows.json`;
+  if (platform === 'darwin') return `${MANIFEST_BASE_URL}macos.json`;
+  return `${MANIFEST_BASE_URL}linux.json`;
+}
+
+export function getArchFilter(
+  platform: string,
+  arch: string,
+): ((archive: string) => boolean) | undefined {
+  if (platform !== 'darwin') return undefined;
+  if (arch === 'arm64') {
+    return (archive: string) => archive.includes('arm64');
+  }
+  return (archive: string) => !archive.includes('arm64');
+}
+
+export async function fetchManifest(url: string): Promise<FlutterManifest> {
   const client = new HttpClient('setup-flutter-sdk');
-  const response = await client.getJson<FlutterManifest>(MANIFEST_URL);
+  const response = await client.getJson<FlutterManifest>(url);
   if (!response.result) {
-    throw new Error(`Failed to fetch Flutter releases manifest from ${MANIFEST_URL}`);
+    throw new Error(`Failed to fetch Flutter releases manifest from ${url}`);
   }
   return response.result;
 }
@@ -40,11 +57,14 @@ export function resolveRelease(
   manifest: FlutterManifest,
   channel: string,
   version: string,
+  archFilter?: (archive: string) => boolean,
 ): ResolvedRelease {
+  const matches = (r: FlutterRelease) => !archFilter || archFilter(r.archive);
+
   let release: FlutterRelease | undefined;
 
   if (version) {
-    release = manifest.releases.find(r => r.version === version);
+    release = manifest.releases.find(r => r.version === version && matches(r));
     if (!release) {
       throw new Error(`Flutter version '${version}' not found in the releases manifest.`);
     }
@@ -55,9 +75,16 @@ export function resolveRelease(
         `Unknown Flutter channel: '${channel}'. Valid channels are: stable, beta, main.`,
       );
     }
-    release = manifest.releases.find(r => r.hash === hash);
-    if (!release) {
+    // Resolve the hash to a version, then find the matching architecture.
+    const hashRelease = manifest.releases.find(r => r.hash === hash);
+    if (!hashRelease) {
       throw new Error(`Could not find the latest '${channel}' release in the manifest.`);
+    }
+    release = manifest.releases.find(r => r.version === hashRelease.version && matches(r));
+    if (!release) {
+      throw new Error(
+        `Could not find a '${channel}' release for the current architecture in the manifest.`,
+      );
     }
   }
 
@@ -79,15 +106,27 @@ async function run(): Promise<void> {
     );
   }
 
-  const manifest = await fetchManifest();
-  const resolved = resolveRelease(manifest, channel, version);
+  const platform = process.platform;
+  const arch = process.arch;
+  const manifestUrl = getManifestUrl(platform);
+  const manifest = await fetchManifest(manifestUrl);
+  const archFilter = getArchFilter(platform, arch);
+  const resolved = resolveRelease(manifest, channel, version, archFilter);
 
   core.info(`Flutter version: ${resolved.version}`);
 
   const toolCacheDir = process.env['RUNNER_TOOL_CACHE'] ?? os.tmpdir();
   const installBase = path.join(toolCacheDir, 'flutter', resolved.version);
   const flutterRoot = path.join(installBase, 'flutter');
-  const cacheKey = `setup-flutter-sdk-linux-${resolved.version}`;
+
+  let cacheKey: string;
+  if (platform === 'darwin') {
+    cacheKey = `setup-flutter-sdk-macos-${arch}-${resolved.version}`;
+  } else if (platform === 'win32') {
+    cacheKey = `setup-flutter-sdk-windows-${resolved.version}`;
+  } else {
+    cacheKey = `setup-flutter-sdk-linux-${resolved.version}`;
+  }
 
   const cacheHit = await cache.restoreCache([flutterRoot], cacheKey);
   if (cacheHit) {
@@ -95,7 +134,11 @@ async function run(): Promise<void> {
   } else {
     core.info(`Downloading from ${resolved.archiveUrl} ...`);
     const archivePath = await tc.downloadTool(resolved.archiveUrl);
-    await tc.extractTar(archivePath, installBase, 'xJ');
+    if (platform === 'linux') {
+      await tc.extractTar(archivePath, installBase, 'xJ');
+    } else {
+      await tc.extractZip(archivePath, installBase);
+    }
     await cache.saveCache([flutterRoot], cacheKey);
   }
 
