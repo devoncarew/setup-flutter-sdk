@@ -67,9 +67,17 @@ export function resolveRelease(
   };
 }
 
+const VALID_CHANNELS = ['stable', 'beta', 'main'];
+
 async function run(): Promise<void> {
   const channel = core.getInput('channel') || 'stable';
   const version = core.getInput('version');
+
+  if (!version && !VALID_CHANNELS.includes(channel)) {
+    throw new Error(
+      `Invalid channel '${channel}'. Valid channels are: ${VALID_CHANNELS.join(', ')}.`,
+    );
+  }
 
   const manifest = await fetchManifest();
   const resolved = resolveRelease(manifest, channel, version);
