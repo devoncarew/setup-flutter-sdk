@@ -62,7 +62,7 @@ single `dist/index.js` that includes all dependencies. The `build` script in
 2. Detect the current OS (`process.platform`) and CPU architecture (`process.arch`).
 3. Fetch the OS-specific Flutter releases manifest from Google Storage.
 4. Resolve the requested channel/version to a specific version string and
-   archive URL using the manifest. On macOS, `getArchFilter` selects the correct
+   archive URL using the manifest. On macOS, a second lookup selects the correct
    archive for Apple Silicon (`arm64`) or Intel (`x64`).
 5. Compute a cache key: `setup-flutter-sdk-<os>[-<arch>]-<resolved-version>`.
 6. Attempt cache restore via `@actions/cache`.

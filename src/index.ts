@@ -33,17 +33,6 @@ export function getManifestUrl(platform: string): string {
   return `${MANIFEST_BASE_URL}linux.json`;
 }
 
-export function getArchFilter(
-  platform: string,
-  arch: string,
-): ((archive: string) => boolean) | undefined {
-  if (platform !== 'darwin') return undefined;
-  if (arch === 'arm64') {
-    return (archive: string) => archive.includes('arm64');
-  }
-  return (archive: string) => !archive.includes('arm64');
-}
-
 export async function fetchManifest(url: string): Promise<FlutterManifest> {
   const client = new HttpClient('setup-flutter-sdk');
   const response = await client.getJson<FlutterManifest>(url);
@@ -57,14 +46,11 @@ export function resolveRelease(
   manifest: FlutterManifest,
   channel: string,
   version: string,
-  archFilter?: (archive: string) => boolean,
 ): ResolvedRelease {
-  const matches = (r: FlutterRelease) => !archFilter || archFilter(r.archive);
-
   let release: FlutterRelease | undefined;
 
   if (version) {
-    release = manifest.releases.find(r => r.version === version && matches(r));
+    release = manifest.releases.find(r => r.version === version);
     if (!release) {
       throw new Error(`Flutter version '${version}' not found in the releases manifest.`);
     }
@@ -75,16 +61,9 @@ export function resolveRelease(
         `Unknown Flutter channel: '${channel}'. Valid channels are: stable, beta, main.`,
       );
     }
-    // Resolve the hash to a version, then find the matching architecture.
-    const hashRelease = manifest.releases.find(r => r.hash === hash);
-    if (!hashRelease) {
-      throw new Error(`Could not find the latest '${channel}' release in the manifest.`);
-    }
-    release = manifest.releases.find(r => r.version === hashRelease.version && matches(r));
+    release = manifest.releases.find(r => r.hash === hash);
     if (!release) {
-      throw new Error(
-        `Could not find a '${channel}' release for the current architecture in the manifest.`,
-      );
+      throw new Error(`Could not find the latest '${channel}' release in the manifest.`);
     }
   }
 
@@ -110,10 +89,22 @@ async function run(): Promise<void> {
   const arch = process.arch;
   const manifestUrl = getManifestUrl(platform);
   const manifest = await fetchManifest(manifestUrl);
-  const archFilter = getArchFilter(platform, arch);
-  const resolved = resolveRelease(manifest, channel, version, archFilter);
+  const resolved = resolveRelease(manifest, channel, version);
 
   core.info(`Flutter version: ${resolved.version}`);
+
+  // On macOS the manifest has separate entries for arm64 and x64. Select the
+  // archive that matches the current architecture.
+  let archiveUrl = resolved.archiveUrl;
+  if (platform === 'darwin') {
+    const isArm = arch === 'arm64';
+    const archRelease = manifest.releases.find(
+      r => r.version === resolved.version && isArm === r.archive.includes('arm64'),
+    );
+    if (archRelease) {
+      archiveUrl = `${ARCHIVE_BASE_URL}${archRelease.archive}`;
+    }
+  }
 
   const toolCacheDir = process.env['RUNNER_TOOL_CACHE'] ?? os.tmpdir();
   const installBase = path.join(toolCacheDir, 'flutter', resolved.version);
@@ -132,8 +123,8 @@ async function run(): Promise<void> {
   if (cacheHit) {
     core.info('Restored Flutter SDK from cache.');
   } else {
-    core.info(`Downloading from ${resolved.archiveUrl} ...`);
-    const archivePath = await tc.downloadTool(resolved.archiveUrl);
+    core.info(`Downloading from ${archiveUrl} ...`);
+    const archivePath = await tc.downloadTool(archiveUrl);
     if (platform === 'linux') {
       await tc.extractTar(archivePath, installBase, 'xJ');
     } else {
