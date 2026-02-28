@@ -59,25 +59,30 @@ single `dist/index.js` that includes all dependencies. The `build` script in
 ## Action Logic Flow
 
 1. Read inputs (`channel`, `version`) via `@actions/core`.
-2. Determine the target OS (currently always `linux`).
-3. Fetch the Flutter releases manifest from Google Storage.
+2. Detect the current OS (`process.platform`) and CPU architecture (`process.arch`).
+3. Fetch the OS-specific Flutter releases manifest from Google Storage.
 4. Resolve the requested channel/version to a specific version string and
-   archive URL using the manifest.
-5. Compute a cache key: `setup-flutter-sdk-<os>-<resolved-version>`.
+   archive URL using the manifest. On macOS, a second lookup selects the correct
+   archive for Apple Silicon (`arm64`) or Intel (`x64`).
+5. Compute a cache key: `setup-flutter-sdk-<os>[-<arch>]-<resolved-version>`.
 6. Attempt cache restore via `@actions/cache`.
-7. On cache miss: download the archive and extract it.
+7. On cache miss: download the archive and extract it (`.tar.xz` on Linux,
+   `.zip` on macOS/Windows).
 8. Save to cache (on miss).
 9. Add `<sdk-root>/bin` to `PATH` via `core.addPath`.
 10. Set outputs: `flutter-version` and `flutter-root`.
 
 ## Flutter Releases Manifest
 
-URL: `https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json`
+Base URL: `https://storage.googleapis.com/flutter_infra_release/releases/releases_<os>.json`
+where `<os>` is `linux`, `macos`, or `windows`.
 
 - `current_release.<channel>` → hash of the latest release on that channel
 - `releases[]` → array of all releases; look up by `hash` or `version`
 - Each release has: `hash`, `channel`, `version`, `archive` (relative path)
 - Archive base URL: `https://storage.googleapis.com/flutter_infra_release/releases/`
+- On macOS, two entries exist per version — one for x64 and one for `arm64`
+  (identified by `arm64` in the archive filename)
 
 ## Error Handling
 
@@ -96,7 +101,6 @@ URL: `https://storage.googleapis.com/flutter_infra_release/releases/releases_lin
 
 ## What's Out of Scope (for now)
 
-- macOS and Windows support (planned for a later milestone)
 - Partial version matching (e.g. `3.19` → latest `3.19.x`)
 - Pub cache caching
 - Any inputs beyond `channel` and `version`

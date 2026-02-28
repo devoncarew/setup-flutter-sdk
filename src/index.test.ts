@@ -1,4 +1,4 @@
-import { resolveRelease, FlutterManifest, ARCHIVE_BASE_URL } from './index';
+import { resolveRelease, getManifestUrl, FlutterManifest, ARCHIVE_BASE_URL } from './index';
 
 const mockManifest: FlutterManifest = {
   current_release: {
@@ -63,5 +63,19 @@ describe('resolveRelease', () => {
     expect(() => resolveRelease(mockManifest, 'nightly', '')).toThrow(
       "Unknown Flutter channel: 'nightly'.",
     );
+  });
+});
+
+describe('getManifestUrl', () => {
+  it('returns the linux manifest URL for linux', () => {
+    expect(getManifestUrl('linux')).toContain('releases_linux.json');
+  });
+
+  it('returns the macos manifest URL for darwin', () => {
+    expect(getManifestUrl('darwin')).toContain('releases_macos.json');
+  });
+
+  it('returns the windows manifest URL for win32', () => {
+    expect(getManifestUrl('win32')).toContain('releases_windows.json');
   });
 });
