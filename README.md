@@ -1,6 +1,6 @@
-# setup-flutter-sdk
+# Setup Flutter SDK
 
-A GitHub Action that installs and caches the Flutter SDK.
+A GitHub action that installs the Flutter SDK.
 
 ## Usage
 
@@ -39,6 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: devoncarew/setup-flutter-sdk@v1
+
+      - run: flutter pub get
+      - run: flutter analyze
       - run: flutter test
 ```
 

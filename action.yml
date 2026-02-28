@@ -1,6 +1,10 @@
 name: 'Setup Flutter SDK'
 description: 'A GitHub action to install the Flutter SDK.'
 
+branding:
+  color: blue
+  icon: download-cloud
+
 inputs:
   channel:
     description: 'A Flutter release channel (stable, beta, main)'
@@ -19,7 +23,3 @@ outputs:
     description: 'The resolved Flutter SDK version'
   flutter-root:
     description: 'The path to the Flutter SDK root directory'
-
-branding:
-  icon: download-cloud
-  color: blue
