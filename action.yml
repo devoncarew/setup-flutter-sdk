@@ -1,0 +1,18 @@
+name: 'Setup Flutter SDK'
+description: 'Install and cache the Flutter SDK'
+inputs:
+  channel:
+    description: 'Flutter release channel (stable, beta, main)'
+    required: false
+    default: 'stable'
+  version:
+    description: 'Specific Flutter version (e.g. 3.19.6); overrides channel'
+    required: false
+runs:
+  using: node20
+  main: dist/index.js
+outputs:
+  flutter-version:
+    description: 'The resolved Flutter SDK version'
+  flutter-root:
+    description: 'Path to the Flutter SDK root directory'
