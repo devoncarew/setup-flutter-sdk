@@ -5,7 +5,8 @@
       "Bash(npm run lint)",
       "Bash(npm run build)",
       "Bash(npm test)",
-      "Bash(git check-ignore -v dist/index.js)"
+      "Bash(git check-ignore -v dist/index.js)",
+      "Bash(git -C:*)"
     ]
   }
 }
