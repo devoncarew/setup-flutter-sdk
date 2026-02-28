@@ -25,7 +25,7 @@
 - Benchmark `.tar.xz` vs `.zip` extraction time on GitHub-hosted runners to
   confirm the best archive format for Linux
 
-## Milestone 4 — Caching
+## Milestone 4 — Caching ✓
 
 - Wrap the download/extract with `@actions/cache` restore + save
 - Verify in the smoke test that a second run is a cache hit (check action logs)

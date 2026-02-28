@@ -1,6 +1,8 @@
 import * as core from '@actions/core';
+import * as cache from '@actions/cache';
 import * as tc from '@actions/tool-cache';
 import { HttpClient } from '@actions/http-client';
+import * as os from 'os';
 import * as path from 'path';
 
 const MANIFEST_URL =
@@ -73,11 +75,21 @@ async function run(): Promise<void> {
   const resolved = resolveRelease(manifest, channel, version);
 
   core.info(`Flutter version: ${resolved.version}`);
-  core.info(`Downloading from ${resolved.archiveUrl} ...`);
 
-  const archivePath = await tc.downloadTool(resolved.archiveUrl);
-  const extractDir = await tc.extractTar(archivePath, undefined, 'xJ');
-  const flutterRoot = path.join(extractDir, 'flutter');
+  const toolCacheDir = process.env['RUNNER_TOOL_CACHE'] ?? os.tmpdir();
+  const installBase = path.join(toolCacheDir, 'flutter', resolved.version);
+  const flutterRoot = path.join(installBase, 'flutter');
+  const cacheKey = `setup-flutter-sdk-linux-${resolved.version}`;
+
+  const cacheHit = await cache.restoreCache([flutterRoot], cacheKey);
+  if (cacheHit) {
+    core.info('Restored Flutter SDK from cache.');
+  } else {
+    core.info(`Downloading from ${resolved.archiveUrl} ...`);
+    const archivePath = await tc.downloadTool(resolved.archiveUrl);
+    await tc.extractTar(archivePath, installBase, 'xJ');
+    await cache.saveCache([flutterRoot], cacheKey);
+  }
 
   core.addPath(path.join(flutterRoot, 'bin'));
   core.setOutput('flutter-version', resolved.version);
