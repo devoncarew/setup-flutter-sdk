@@ -1,10 +1,10 @@
 {
   "name": "setup-flutter-sdk",
-  "version": "0.0.1",
-  "description": "GitHub Action to install and cache the Flutter SDK",
+  "version": "0.1.0",
+  "description": "A GitHub action to install the Flutter SDK.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/index.js -o dist",
+    "build": "tsc && ncc build lib/index.js -o dist --minify",
     "lint": "eslint src/",
     "test": "jest"
   },
