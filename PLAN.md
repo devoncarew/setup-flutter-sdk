@@ -37,14 +37,20 @@
 - Add input validation with clear error messages
 - Publish to GitHub Marketplace as v1
 
-## Milestone 6 — macOS & Windows
+## Milestone 6 — Pub cache ✓
+
+- Use an explicit, fixed location for the pub cache
+- Export the pub cache bin's directory to the system path
+- For now, do not use caching (`@actions/cache`) for the pub cache
+
+## Milestone 7 — macOS & Windows
 
 - Add platform detection; use `.zip` on Windows, `.tar.xz` on Linux/macOS
 - Update the releases manifest URL per OS (`releases_macos.json`,
   `releases_windows.json`)
 - Update smoke test matrix to include all three platforms
 
-## Milestone 7 — Partial Version Matching
+## Milestone 8 — Partial Version Matching
 
 - Accept versions like `3.19` and resolve to the latest `3.19.x` in the
   manifest
