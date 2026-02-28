@@ -74,6 +74,11 @@ Use outputs with `id`:
 3. Restores the SDK from the GitHub Actions cache if available.
 4. On a cache miss, downloads and extracts the SDK, then saves it to cache.
 5. Adds `flutter` and `dart` to `PATH` via the SDK's `bin/` directory.
+6. Sets `PUB_CACHE` to `~/.pub-cache` and adds `~/.pub-cache/bin` to `PATH`.
 
 The cache key is `setup-flutter-sdk-linux-<version>`, so cache hits are stable
 and deterministic across workflow runs.
+
+Setting `PUB_CACHE` explicitly ensures a consistent pub cache location across
+all steps. Adding `~/.pub-cache/bin` to `PATH` makes globally-activated Dart
+tools (e.g. `dart pub global activate`) available without extra configuration.

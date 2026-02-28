@@ -102,6 +102,10 @@ async function run(): Promise<void> {
   core.addPath(path.join(flutterRoot, 'bin'));
   core.setOutput('flutter-version', resolved.version);
   core.setOutput('flutter-root', flutterRoot);
+
+  const pubCacheDir = path.join(os.homedir(), '.pub-cache');
+  core.exportVariable('PUB_CACHE', pubCacheDir);
+  core.addPath(path.join(pubCacheDir, 'bin'));
 }
 
 if (require.main === module) {
