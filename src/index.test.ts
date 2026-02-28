@@ -8,16 +8,16 @@ const mockManifest: FlutterManifest = {
   },
   releases: [
     {
-      hash: 'abc123',
-      channel: 'stable',
-      version: '3.19.6',
-      archive: 'stable/linux/flutter_linux_3.19.6-stable.tar.xz',
-    },
-    {
       hash: 'old456',
       channel: 'stable',
       version: '3.19.5',
       archive: 'stable/linux/flutter_linux_3.19.5-stable.tar.xz',
+    },
+    {
+      hash: 'abc123',
+      channel: 'stable',
+      version: '3.19.6',
+      archive: 'stable/linux/flutter_linux_3.19.6-stable.tar.xz',
     },
     {
       hash: 'def456',
