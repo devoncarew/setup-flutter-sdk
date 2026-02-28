@@ -1,5 +1,7 @@
 import * as core from '@actions/core';
+import * as tc from '@actions/tool-cache';
 import { HttpClient } from '@actions/http-client';
+import * as path from 'path';
 
 const MANIFEST_URL =
   'https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json';
@@ -70,8 +72,16 @@ async function run(): Promise<void> {
   const manifest = await fetchManifest();
   const resolved = resolveRelease(manifest, channel, version);
 
-  core.info(`Resolved Flutter version: ${resolved.version}`);
-  core.info(`Archive URL: ${resolved.archiveUrl}`);
+  core.info(`Flutter version: ${resolved.version}`);
+  core.info(`Downloading from ${resolved.archiveUrl} ...`);
+
+  const archivePath = await tc.downloadTool(resolved.archiveUrl);
+  const extractDir = await tc.extractTar(archivePath, undefined, 'xJ');
+  const flutterRoot = path.join(extractDir, 'flutter');
+
+  core.addPath(path.join(flutterRoot, 'bin'));
+  core.setOutput('flutter-version', resolved.version);
+  core.setOutput('flutter-root', flutterRoot);
 }
 
 if (require.main === module) {

@@ -1,0 +1,25 @@
+name: Smoke test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter SDK
+        id: flutter
+        uses: ./
+
+      - name: Verify flutter --version
+        run: flutter --version
+
+      - name: Print outputs
+        run: |
+          echo "flutter-version: ${{ steps.flutter.outputs.flutter-version }}"
+          echo "flutter-root: ${{ steps.flutter.outputs.flutter-root }}"

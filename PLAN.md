@@ -16,7 +16,7 @@
   version-not-found error
 - No download yet; just confirm the resolved version and archive URL are correct
 
-## Milestone 3 — Download & Extract (no cache)
+## Milestone 3 — Download & Extract (no cache) ✓
 
 - On cache miss, download the archive URL and extract it using `tool-cache`
 - Add `bin/` to PATH, set outputs
