@@ -42,6 +42,18 @@ export async function fetchManifest(url: string): Promise<FlutterManifest> {
   return response.result;
 }
 
+function compareVersions(a: string, b: string): number {
+  const aParts = a.split('.');
+  const bParts = b.split('.');
+  const len = Math.max(aParts.length, bParts.length);
+  for (let i = 0; i < len; i++) {
+    const av = parseInt(aParts[i] ?? '0', 10);
+    const bv = parseInt(bParts[i] ?? '0', 10);
+    if (av !== bv) return av - bv;
+  }
+  return 0;
+}
+
 export function resolveRelease(
   manifest: FlutterManifest,
   channel: string,
@@ -50,10 +62,15 @@ export function resolveRelease(
   let release: FlutterRelease | undefined;
 
   if (version) {
-    release = manifest.releases.find(r => r.version === version);
-    if (!release) {
+    const matches = manifest.releases.filter(
+      r => r.version === version || r.version.startsWith(version + '.'),
+    );
+    if (matches.length === 0) {
       throw new Error(`Flutter version '${version}' not found in the releases manifest.`);
     }
+    release = matches.reduce((best, r) =>
+      compareVersions(r.version, best.version) > 0 ? r : best,
+    );
   } else {
     const hash = manifest.current_release[channel];
     if (!hash) {

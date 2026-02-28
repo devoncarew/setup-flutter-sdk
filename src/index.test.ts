@@ -8,16 +8,16 @@ const mockManifest: FlutterManifest = {
   },
   releases: [
     {
-      hash: 'abc123',
-      channel: 'stable',
-      version: '3.19.6',
-      archive: 'stable/linux/flutter_linux_3.19.6-stable.tar.xz',
-    },
-    {
       hash: 'old456',
       channel: 'stable',
       version: '3.19.5',
       archive: 'stable/linux/flutter_linux_3.19.5-stable.tar.xz',
+    },
+    {
+      hash: 'abc123',
+      channel: 'stable',
+      version: '3.19.6',
+      archive: 'stable/linux/flutter_linux_3.19.6-stable.tar.xz',
     },
     {
       hash: 'def456',
@@ -51,6 +51,11 @@ describe('resolveRelease', () => {
     expect(result.archiveUrl).toBe(
       `${ARCHIVE_BASE_URL}stable/linux/flutter_linux_3.19.5-stable.tar.xz`,
     );
+  });
+
+  it('resolves a partial version (major.minor) to the latest patch release', () => {
+    const result = resolveRelease(mockManifest, 'stable', '3.19');
+    expect(result.version).toBe('3.19.6');
   });
 
   it('throws for an exact version not in the manifest', () => {
