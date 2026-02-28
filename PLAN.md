@@ -1,6 +1,6 @@
 # Implementation Plan — setup-flutter-sdk
 
-## Milestone 1 — Scaffold
+## Milestone 1 — Scaffold ✓
 
 - Initialize the repo: `package.json`, `tsconfig.json`, `.gitignore`, `action.yml`
 - Install deps: `@actions/core`, `@actions/cache`, `@actions/tool-cache`,
@@ -9,7 +9,7 @@
   confirm `dist/index.js` is produced
 - Add `.github/workflows/ci.yml` that runs `npm run build && npm test` on PRs
 
-## Milestone 2 — Release Resolution
+## Milestone 2 — Release Resolution ✓
 
 - Write the manifest-fetching and version-resolution logic
 - Unit tests covering: channel resolution, exact version lookup,
