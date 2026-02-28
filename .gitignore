@@ -80,7 +80,13 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+
+# TypeScript intermediate build output
+lib/
+
+# Action bundle (dist/index.js is committed; everything else is ignored)
+dist/*
+!dist/index.js
 
 # Gatsby files
 .cache/
