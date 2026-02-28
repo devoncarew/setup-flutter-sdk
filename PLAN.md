@@ -50,7 +50,7 @@
   `releases_windows.json`)
 - Update smoke test matrix to include all three platforms
 
-## Milestone 8 — Partial Version Matching
+## Milestone 8 — Partial Version Matching ✓
 
 - Accept versions like `3.19` and resolve to the latest `3.19.x` in the
   manifest

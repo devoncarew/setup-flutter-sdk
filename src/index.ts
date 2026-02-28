@@ -50,7 +50,9 @@ export function resolveRelease(
   let release: FlutterRelease | undefined;
 
   if (version) {
-    release = manifest.releases.find(r => r.version === version);
+    release = manifest.releases.find(
+      r => r.version === version || r.version.startsWith(version + '.'),
+    );
     if (!release) {
       throw new Error(`Flutter version '${version}' not found in the releases manifest.`);
     }

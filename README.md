@@ -26,6 +26,14 @@ A GitHub action that installs the Flutter SDK.
     version: '3.19.6'
 ```
 
+### Install the latest patch for a minor version
+
+```yaml
+- uses: devoncarew/setup-flutter-sdk@v1
+  with:
+    version: '3.19'
+```
+
 ### Full workflow example
 
 ```yaml
@@ -50,7 +58,7 @@ jobs:
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
 | `channel` | No | `stable` | Flutter release channel: `stable`, `beta`, or `main`. Ignored when `version` is set. |
-| `version` | No | — | Specific Flutter version, e.g. `3.19.6`. Overrides `channel`. |
+| `version` | No | — | Flutter version or prefix, e.g. `3.19.6` or `3.19` (resolves to latest `3.19.x`). Overrides `channel`. |
 
 ## Outputs
 

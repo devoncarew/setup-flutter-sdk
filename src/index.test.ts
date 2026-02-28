@@ -53,6 +53,11 @@ describe('resolveRelease', () => {
     );
   });
 
+  it('resolves a partial version (major.minor) to the latest patch release', () => {
+    const result = resolveRelease(mockManifest, 'stable', '3.19');
+    expect(result.version).toBe('3.19.6');
+  });
+
   it('throws for an exact version not in the manifest', () => {
     expect(() => resolveRelease(mockManifest, 'stable', '9.9.9')).toThrow(
       "Flutter version '9.9.9' not found in the releases manifest.",

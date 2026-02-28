@@ -11,7 +11,7 @@ inputs:
     required: false
     default: 'stable'
   version:
-    description: 'A specific Flutter version, e.g. 3.19.6 (this overrides channel)'
+    description: 'A Flutter version or prefix, e.g. 3.19.6 or 3.19 (this overrides channel)'
     required: false
 
 runs:
