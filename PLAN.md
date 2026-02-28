@@ -31,7 +31,7 @@
 - Verify in the smoke test that a second run is a cache hit (check action logs)
 - Benchmark: compare cold vs warm run times
 
-## Milestone 5 — Polish & Release
+## Milestone 5 — Polish & Release ✓
 
 - Write `README.md` with usage examples
 - Add input validation with clear error messages

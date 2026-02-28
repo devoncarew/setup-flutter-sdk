@@ -19,3 +19,7 @@ outputs:
     description: 'The resolved Flutter SDK version'
   flutter-root:
     description: 'The path to the Flutter SDK root directory'
+
+branding:
+  icon: download-cloud
+  color: blue
