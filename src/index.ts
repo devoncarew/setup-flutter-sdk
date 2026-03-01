@@ -34,7 +34,7 @@ export function getManifestUrl(platform: string): string {
 }
 
 export async function fetchManifest(url: string): Promise<FlutterManifest> {
-  const client = new HttpClient('setup-flutter-sdk');
+  const client = new HttpClient('setup-flutter-action');
   const response = await client.getJson<FlutterManifest>(url);
   if (!response.result) {
     throw new Error(`Failed to fetch Flutter releases manifest from ${url}`);
@@ -129,11 +129,11 @@ async function run(): Promise<void> {
 
   let cacheKey: string;
   if (platform === 'darwin') {
-    cacheKey = `setup-flutter-sdk-macos-${arch}-${resolved.version}`;
+    cacheKey = `setup-flutter-macos-${arch}-${resolved.version}`;
   } else if (platform === 'win32') {
-    cacheKey = `setup-flutter-sdk-windows-${resolved.version}`;
+    cacheKey = `setup-flutter-windows-${resolved.version}`;
   } else {
-    cacheKey = `setup-flutter-sdk-linux-${resolved.version}`;
+    cacheKey = `setup-flutter-linux-${resolved.version}`;
   }
 
   const cacheHit = await cache.restoreCache([flutterRoot], cacheKey);
