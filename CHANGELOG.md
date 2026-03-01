@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Update dependencies to the latest and recompile the action.
+
 ## 1.0.0
 
 Initial release:

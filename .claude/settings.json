@@ -6,7 +6,10 @@
       "Bash(npm run build)",
       "Bash(npm test)",
       "Bash(git check-ignore -v dist/index.js)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
