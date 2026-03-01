@@ -38,7 +38,7 @@ jobs:
       # Setup Flutter Action
       - uses: ./
         with:
-          version: ${{ version }}
+          version: ${{ matrix.version }}
 
       - run: flutter --version
 
@@ -53,6 +53,6 @@ jobs:
       # Setup Flutter Action
       - uses: ./
         with:
-          channel: ${{ channel }}
+          channel: ${{ matrix.channel }}
 
       - run: flutter --version
