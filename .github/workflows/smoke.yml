@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Flutter Action
       - id: flutter
@@ -33,7 +33,7 @@ jobs:
         version: [ '3.41.2', '3.42.0-0.1.pre' ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Flutter Action
       - uses: ./
@@ -48,7 +48,7 @@ jobs:
         channel: [ 'stable', 'beta' ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Setup Flutter Action
       - uses: ./
