@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  smoke:
+  smoke-os:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -16,21 +16,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Flutter Action
-        id: flutter
+      # Setup Flutter Action
+      - id: flutter
         uses: ./
 
-      - name: Verify flutter --version
-        run: flutter --version
+      - run: flutter --version
 
       - name: Print outputs
         run: |
           echo "flutter-version: ${{ steps.flutter.outputs.flutter-version }}"
           echo "flutter-root: ${{ steps.flutter.outputs.flutter-root }}"
 
-      - name: Setup Flutter Action again (expect cache hit)
-        id: flutter-cached
-        uses: ./
+  smoke-version:
+    strategy:
+      matrix:
+        version: [ '3.41.2', '3.42.0' ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Verify flutter --version (cached)
-        run: flutter --version
+      # Setup Flutter Action
+      - uses: ./
+        with:
+          version: ${{ version }}
+
+      - run: flutter --version
+
+  smoke-channel:
+    strategy:
+      matrix:
+        channel: [ 'stable', 'beta' ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Flutter Action
+      - uses: ./
+        with:
+          channel: ${{ channel }}
+
+      - run: flutter --version
