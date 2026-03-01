@@ -1,4 +1,4 @@
-import { resolveRelease, getManifestUrl, FlutterManifest, ARCHIVE_BASE_URL } from './index';
+import { resolveRelease, getManifestUrl, FlutterManifest, ARCHIVE_BASE_URL } from './flutter';
 
 const mockManifest: FlutterManifest = {
   current_release: {

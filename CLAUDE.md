@@ -19,7 +19,8 @@ See `docs/DESIGN.md` for full design rationale and architecture.
 ## Repository Layout
 
 ```
-src/index.ts      # All action logic lives here (for now; split if it grows)
+src/flutter.ts    # Pure utility functions: manifest types, URL helpers, version resolution
+src/index.ts      # Action entry point: fetchManifest, run(), @actions/* integrations
 dist/index.js     # Compiled output — regenerate with `npm run build`
 action.yml        # Action metadata
 ```
@@ -52,9 +53,15 @@ practice for GitHub Actions) and must be rebuilt and re-committed whenever
 
 ## Build Pipeline
 
-TypeScript is compiled with `tsc` and then bundled with `@vercel/ncc` into a
-single `dist/index.js` that includes all dependencies. The `build` script in
-`package.json` runs both steps.
+`tsc --noEmit` type-checks the source using `tsconfig.json` (which sets
+`moduleResolution: "bundler"` so TypeScript can resolve ESM-only `@actions/*`
+packages). Then `esbuild` bundles `src/index.ts` and all its dependencies into
+a single `dist/index.js` in CJS format. The `build` script in `package.json`
+runs both steps.
+
+A separate `tsconfig.test.json` (CJS mode, `moduleResolution: "node"`) is used
+by Jest/ts-jest. Tests only import from `src/flutter.ts`, which has no external
+dependencies, so Jest never encounters the ESM-only `@actions/*` packages.
 
 ## Action Logic Flow
 
