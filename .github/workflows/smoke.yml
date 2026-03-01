@@ -30,7 +30,7 @@ jobs:
   smoke-version:
     strategy:
       matrix:
-        version: [ '3.41.2', '3.42.0' ]
+        version: [ '3.41.2', '3.42.0-0.1.pre' ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
