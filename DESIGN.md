@@ -1,8 +1,8 @@
-# setup-flutter-sdk Design
+# setup-flutter-action Design
 
 ## Overview
 
-`devoncarew/setup-flutter-sdk` is a GitHub Action that installs the Flutter SDK
+`devoncarew/setup-flutter-action` is a GitHub Action that installs the Flutter SDK
 into a workflow environment. It is optimized for fast startup — particularly on
 repeated runs — by caching the SDK transparently via `actions/cache`.
 
@@ -86,9 +86,9 @@ URL construction guesswork.
 Caching is handled transparently using `@actions/cache`. Users do not need to
 add a separate cache step.
 
-**Cache key:** `setup-flutter-sdk-<os>-<resolved-version>`
+**Cache key:** `setup-flutter-<os>-<resolved-version>`
 
-Example: `setup-flutter-sdk-linux-3.19.6`
+Example: `setup-flutter-linux-3.19.6`
 
 **Cache path:** the directory containing the extracted Flutter SDK
 (e.g. `$RUNNER_TOOL_CACHE/flutter/<version>/`).
@@ -135,7 +135,7 @@ formats and path handling.
 ## Repository Structure
 
 ```
-setup-flutter-sdk/
+setup-flutter-action/
 ├── action.yml          # Action metadata (inputs, outputs, entry point)
 ├── src/
 │   └── index.ts        # Main action logic
@@ -154,8 +154,8 @@ setup-flutter-sdk/
 ## action.yml
 
 ```yaml
-name: 'Setup Flutter SDK'
-description: 'Install and cache the Flutter SDK'
+name: 'Setup Flutter Action'
+description: 'A GitHub action to install the Flutter SDK'
 inputs:
   channel:
     description: 'Flutter release channel (stable, beta, main)'

@@ -1,4 +1,4 @@
-# Setup Flutter SDK
+# Setup Flutter Action
 
 A GitHub action that installs the Flutter SDK.
 
@@ -7,13 +7,13 @@ A GitHub action that installs the Flutter SDK.
 ### Install the latest stable Flutter release
 
 ```yaml
-- uses: devoncarew/setup-flutter-sdk@v1
+- uses: devoncarew/setup-flutter-action@v1
 ```
 
 ### Install the latest beta
 
 ```yaml
-- uses: devoncarew/setup-flutter-sdk@v1
+- uses: devoncarew/setup-flutter-action@v1
   with:
     channel: beta
 ```
@@ -21,7 +21,7 @@ A GitHub action that installs the Flutter SDK.
 ### Install a specific version
 
 ```yaml
-- uses: devoncarew/setup-flutter-sdk@v1
+- uses: devoncarew/setup-flutter-action@v1
   with:
     version: '3.19.6'
 ```
@@ -29,7 +29,7 @@ A GitHub action that installs the Flutter SDK.
 ### Install the latest patch for a minor version
 
 ```yaml
-- uses: devoncarew/setup-flutter-sdk@v1
+- uses: devoncarew/setup-flutter-action@v1
   with:
     version: '3.19'
 ```
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: devoncarew/setup-flutter-sdk@v1
+      - uses: devoncarew/setup-flutter-action@v1
 
       - run: flutter pub get
       - run: flutter analyze
@@ -70,7 +70,7 @@ jobs:
 Use outputs with `id`:
 
 ```yaml
-- uses: devoncarew/setup-flutter-sdk@v1
+- uses: devoncarew/setup-flutter-action@v1
   id: flutter
 - run: echo "Flutter ${{ steps.flutter.outputs.flutter-version }}"
 ```
@@ -89,10 +89,10 @@ Cache keys are stable and deterministic across workflow runs:
 
 | Platform | Cache key |
 |----------|-----------|
-| Linux | `setup-flutter-sdk-linux-<version>` |
-| macOS (Apple Silicon) | `setup-flutter-sdk-macos-arm64-<version>` |
-| macOS (Intel) | `setup-flutter-sdk-macos-x64-<version>` |
-| Windows | `setup-flutter-sdk-windows-<version>` |
+| Linux | `setup-flutter-linux-<version>` |
+| macOS (Apple Silicon) | `setup-flutter-macos-arm64-<version>` |
+| macOS (Intel) | `setup-flutter-macos-x64-<version>` |
+| Windows | `setup-flutter-windows-<version>` |
 
 Setting `PUB_CACHE` explicitly ensures a consistent pub cache location across
 all steps. Adding `~/.pub-cache/bin` to `PATH` makes globally-activated Dart

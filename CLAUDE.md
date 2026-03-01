@@ -1,10 +1,10 @@
-# CLAUDE.md — setup-flutter-sdk
+# CLAUDE.md — setup-flutter-action
 
 This file provides guidance for AI assistants working in this repository.
 
 ## Project Summary
 
-`setup-flutter-sdk` is a GitHub Action that installs and caches the Flutter SDK.
+`setup-flutter-action` is a GitHub Action that installs and caches the Flutter SDK.
 It is written in TypeScript and compiled to `dist/index.js` for execution.
 See `DESIGN.md` for full design rationale and architecture.
 
@@ -64,7 +64,7 @@ single `dist/index.js` that includes all dependencies. The `build` script in
 4. Resolve the requested channel/version to a specific version string and
    archive URL using the manifest. On macOS, a second lookup selects the correct
    archive for Apple Silicon (`arm64`) or Intel (`x64`).
-5. Compute a cache key: `setup-flutter-sdk-<os>[-<arch>]-<resolved-version>`.
+5. Compute a cache key: `setup-flutter-<os>[-<arch>]-<resolved-version>`.
 6. Attempt cache restore via `@actions/cache`.
 7. On cache miss: download the archive and extract it (`.tar.xz` on Linux,
    `.zip` on macOS/Windows).

@@ -1,4 +1,4 @@
-# Implementation Plan — setup-flutter-sdk
+# Implementation Plan — setup-flutter-action
 
 ## Milestone 1 — Scaffold ✓
 

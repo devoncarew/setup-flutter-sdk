@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Flutter SDK
+      - name: Setup Flutter Action
         id: flutter
         uses: ./
 
@@ -28,7 +28,7 @@ jobs:
           echo "flutter-version: ${{ steps.flutter.outputs.flutter-version }}"
           echo "flutter-root: ${{ steps.flutter.outputs.flutter-root }}"
 
-      - name: Setup Flutter SDK again (expect cache hit)
+      - name: Setup Flutter Action again (expect cache hit)
         id: flutter-cached
         uses: ./
 
